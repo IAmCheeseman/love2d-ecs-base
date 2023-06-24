@@ -25,7 +25,7 @@ ECS.system("draw", "draw_sprite", { "sprite", "transform" }, function(ent)
     end
 
     love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(ent.sprite.texture, ent.sprite.quad, tr.x, tr.y, tr.r, tr.scale_x, tr.scale_y, tr.skew_x, tr.skew_y)
+    love.graphics.draw(ent.sprite.texture, ent.sprite.quad, tr.position.x, tr.position.y, tr.r, tr.scale.x, tr.scale.y, tr.skew.x, tr.skew.y)
 end)
 
 ECS.system("step", "animate", { "sprite", "animation" }, function(ent, dt)
