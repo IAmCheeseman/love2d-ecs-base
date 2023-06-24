@@ -20,6 +20,7 @@ local system_types = {}
 
 local entity_instances = {}
 local entity_add_queue = Queue.new()
+local entity_remove_queue = Queue.new()
 
 local function item_exists(definition_array, identifier)
     return definition_array[identifier] ~= nil
@@ -50,17 +51,17 @@ end
 local function add_component_to_instance(instance, identifier, default_value)
     local component = components[identifier]
 
-    if default_value == nil then
-        instance[identifier] = (type(component) ~= "table" and component or Copy.deep(component))
+    if component == nil then
+        instance[identifier] = default_value
     else
+        -- Filling in the properties that were not overridden
         if type(default_value) == "table" then
-            for k, v in pairs(Copy.deep(component)) do
-                if default_value[k] == nil then
-                    default_value[k] = v
-                end
+            component = Copy.deep(component)
+            for k, v in pairs(default_value) do
+                component[k] = v
             end
         end
-        instance[identifier] = default_value
+        instance[identifier] = component
     end
 end
 
@@ -69,11 +70,11 @@ function ECS.create(identifier)
     local instance = setmetatable({}, entity.mt)
     for k, v in pairs(entity.components) do
         if type(k) == "number" then
-            if type(v) == "table" then
-                instance[v] = Copy.deep(components[v])
-            else
-                instance[v] = components[v]
+            local component = components[v]
+            if type(component) == "table" then
+                component = Copy.deep(component)
             end
+            instance[v] = component
         else
             add_component_to_instance(instance, k, v)
         end
@@ -146,7 +147,20 @@ function ECS.add(instance)
     entity_add_queue:push(instance)
 end
 
+function ECS.remove(instance)
+    entity_remove_queue:push(instance)
+end
+
 function ECS.update()
+    while #entity_remove_queue.items ~= 0 do
+        local instance = entity_remove_queue:pop()
+        for i, v in ipairs(entity_instances) do
+            if v == instance then
+                table.remove(entity_instances, i)
+            end
+        end
+    end
+
     while #entity_add_queue.items ~= 0 do
         local instance = entity_add_queue:pop()
         table.insert(entity_instances, instance)

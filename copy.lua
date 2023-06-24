@@ -5,6 +5,10 @@ function Copy.deep(t)
     for i, v in pairs(t) do
         if type(v) == "table" then
             copy[i] = Copy.deep(v)
+            local mt = getmetatable(v)
+            if mt then
+                setmetatable(copy[i], mt)
+            end
         else
             copy[i] = v
         end

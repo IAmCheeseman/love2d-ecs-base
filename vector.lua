@@ -44,6 +44,10 @@ local function vector_rotated(v, by)
     return Vec2.new(math.sin(rotation) * length, math.cos(rotation) * length)
 end
 
+local function vector_copy(v)
+    return Vec2.new(v.x, v.y)
+end
+
 local vector_mt = {
     __add = function(l, r)
         return Vec2.new(l.x + r.x, l.y + r.y)
@@ -67,6 +71,9 @@ local vector_mt = {
     end,
     __unm = function(r)
         return r * -1
+    end,
+    __tostring = function(v)
+        return ("(%d, %d)"):format(v.x, v.y)
     end
 }
 
@@ -87,6 +94,7 @@ function Vec2.new(x, y)
         angle = vector_angle,
         angle_to = vector_angle_to,
         rotated = vector_rotated,
+        copy = vector_copy,
     }, vector_mt)
 end
 
