@@ -1,5 +1,6 @@
 local path = (...):gsub("sprite$", "")
 local ECS = require(path .. "ecs")
+local Animation = require(path .. "animation")
 
 ECS.component("sprite", {
     path = path:gsub("%.", "/") .. "test.png",
@@ -9,8 +10,8 @@ ECS.component("sprite", {
 ECS.component("animation", {
     frame_count = 1,
     current_frame = 1,
-    fps = 10,
     timer = 0,
+    state = Animation.new(1, 1, 10),
 })
 
 ECS.system("draw", "draw_sprite", { "sprite", "transform" }, function(ent)
@@ -38,12 +39,13 @@ ECS.system("step", "animate", { "sprite", "animation" }, function(ent, dt)
 
     anim.timer = anim.timer + dt
 
-    if anim.timer >= 1 / anim.fps then
+    if anim.timer >= 1 / anim.state.fps then
         anim.timer = 0
         anim.current_frame = anim.current_frame + 1
-        if anim.current_frame > anim.frame_count then
-            anim.current_frame = 1
-        end
+    end
+
+    if anim.current_frame > anim.state.stop or anim.current_frame < anim.state.start then
+        anim.current_frame = anim.state.start
     end
 
     local frame = anim.current_frame - 1
