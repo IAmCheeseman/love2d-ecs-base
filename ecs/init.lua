@@ -99,17 +99,17 @@ end
 function ECS.inherited_entity(identifier, super_identifier, components)
     local inherited = Copy.deep(entities[super_identifier].components)
 
-    for i, v in pairs(components) do
+    for i, component in pairs(components) do
         if type(v) == "table" then
             if inherited[i] == nil then
-                inherited[i] = v
+                inherited[i] = component
             else
-                for ii, vv in pairs(v) do
-                    inherited[i][ii] = vv
+                for field, property in pairs(component) do
+                    inherited[i][field] = property
                 end
             end
         else
-            inherited[i] = v
+            inherited[i] = component
         end
     end
     
