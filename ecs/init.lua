@@ -146,7 +146,7 @@ function ECS.remove(instance)
     entity_remove_queue:push(instance)
 end
 
-function ECS.update()
+function ECS.flush_queues()
     while #entity_remove_queue.items ~= 0 do
         local instance = entity_remove_queue:pop()
         for i, v in ipairs(entity_instances) do
