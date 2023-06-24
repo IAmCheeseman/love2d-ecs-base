@@ -41,11 +41,6 @@ local function update_instance_systems(instance)
             table.insert(instance.systems, system_identifier)
         end
     end
-
-    print("--- " .. instance.type .. " components:")
-    for i, v in ipairs(instance.systems) do
-        print(v)
-    end
 end
 
 local function add_component_to_instance(instance, identifier, default_value)
