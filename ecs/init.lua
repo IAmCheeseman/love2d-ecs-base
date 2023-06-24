@@ -96,6 +96,35 @@ function ECS.entity(identifier, components)
     entities[identifier] = entity
 end
 
+function ECS.inherited_entity(identifier, super_identifier, components)
+    local inherited = Copy.deep(entities[super_identifier].components)
+
+    for i, v in pairs(components) do
+        if type(v) == "table" then
+            if inherited[i] == nil then
+                inherited[i] = v
+            else
+                for ii, vv in pairs(v) do
+                    inherited[i][ii] = vv
+                end
+            end
+        else
+            inherited[i] = v
+        end
+    end
+    
+    local entity = {
+        type = identifier,
+        components = inherited,
+    }
+
+    entity.mt = {
+        __index = entity
+    }
+    
+    entities[identifier] = entity
+end
+
 function ECS.component(identifier, value)
     components[identifier] = value
 end
