@@ -44,6 +44,10 @@ local function vector_rotated(v, by)
     return Vec2.new(math.sin(rotation) * length, math.cos(rotation) * length)
 end
 
+local function vector_lerp(a, b, t)
+    return Vec2.new(lerp(a.x, b.x, t), lerp(a.y, b.y, t))
+end
+
 local function vector_copy(v)
     return Vec2.new(v.x, v.y)
 end
@@ -94,6 +98,7 @@ function Vec2.new(x, y)
         angle = vector_angle,
         angle_to = vector_angle_to,
         rotated = vector_rotated,
+        lerp = vector_lerp,
         copy = vector_copy,
     }, vector_mt)
 end
