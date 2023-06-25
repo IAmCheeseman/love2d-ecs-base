@@ -76,6 +76,9 @@ local vector_mt = {
     __unm = function(r)
         return r * -1
     end,
+    __eq = function(l, r)
+        return l.x == r.x and l.y == r.y
+    end,
     __tostring = function(v)
         return ("(%d, %d)"):format(v.x, v.y)
     end

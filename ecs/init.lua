@@ -96,7 +96,7 @@ function Ecs.inherited_entity(identifier, super_identifier, components)
     local inherited = Copy.deep(entities[super_identifier].components)
 
     for i, component in pairs(components) do
-        if type(v) == "table" then
+        if type(component) == "table" then
             if inherited[i] == nil then
                 inherited[i] = component
             else
