@@ -1,20 +1,20 @@
 local path = (...):gsub("sprite$", "")
-local ECS = require(path .. "ecs")
+local Ecs = require(path .. "ecs")
 local Animation = require(path .. "animation")
 
-ECS.component("sprite", {
+Ecs.component("sprite", {
     path = path:gsub("%.", "/") .. "test.png",
     quad = nil,
     texture = nil,
 })
-ECS.component("animation", {
+Ecs.component("animation", {
     frame_count = 1,
     current_frame = 1,
     timer = 0,
     state = Animation.new(1, 1, 10),
 })
 
-ECS.system("draw", { "sprite", "transform" }, function(ent)
+Ecs.system("draw", { "sprite", "transform" }, function(ent)
     local tr = ent.transform
 
     if ent.sprite.texture == nil then
@@ -29,7 +29,7 @@ ECS.system("draw", { "sprite", "transform" }, function(ent)
     love.graphics.draw(ent.sprite.texture, ent.sprite.quad, tr.position.x, tr.position.y, tr.r, tr.scale.x, tr.scale.y, tr.skew.x, tr.skew.y)
 end)
 
-ECS.system("step", { "sprite", "animation" }, function(ent, dt)
+Ecs.system("step", { "sprite", "animation" }, function(ent, dt)
     local anim = ent.animation
     local sprite = ent.sprite
 

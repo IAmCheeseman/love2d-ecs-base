@@ -1,5 +1,5 @@
 local path = (...):gsub("time$", "")
-local ECS = require(path .. "ecs")
+local Ecs = require(path .. "ecs")
 
 local function timer_start(self, time)
     self.total_time = time or self.total_time
@@ -21,13 +21,13 @@ local function create_timer(self, name, time, callback)
     }
 end
 
-ECS.component("timer", {
+Ecs.component("timer", {
     create = create_timer,
 })
 
-ECS.component("time", 0)
+Ecs.component("time", 0)
 
-ECS.system("step", { "timer" }, function(ent, dt)
+Ecs.system("step", { "timer" }, function(ent, dt)
     local timer = ent.timer
 
     for k, v in pairs(timer) do
@@ -41,6 +41,6 @@ ECS.system("step", { "timer" }, function(ent, dt)
     end
 end)
 
-ECS.system("step", { "time" }, function(ent, dt)
+Ecs.system("step", { "time" }, function(ent, dt)
     ent.time = ent.time + dt
 end)

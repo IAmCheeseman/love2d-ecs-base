@@ -4,7 +4,7 @@ local copy_path = path:gsub("ecs.$", "")
 local Queue = require(path .. "queue")
 local Copy = require(copy_path .. "copy")
 
-local ECS = {
+local Ecs = {
 
 }
 
@@ -60,7 +60,7 @@ local function add_component_to_instance(instance, identifier, default_value)
     end
 end
 
-function ECS.create(identifier)
+function Ecs.create(identifier)
     local entity = entities[identifier]
     local instance = setmetatable({}, entity.mt)
     for k, v in pairs(entity.components) do
@@ -79,7 +79,7 @@ function ECS.create(identifier)
     return instance
 end
 
-function ECS.entity(identifier, components)
+function Ecs.entity(identifier, components)
     local entity = {
         type = identifier,
         components = components,
@@ -92,7 +92,7 @@ function ECS.entity(identifier, components)
     entities[identifier] = entity
 end
 
-function ECS.inherited_entity(identifier, super_identifier, components)
+function Ecs.inherited_entity(identifier, super_identifier, components)
     local inherited = Copy.deep(entities[super_identifier].components)
 
     for i, component in pairs(components) do
@@ -121,11 +121,11 @@ function ECS.inherited_entity(identifier, super_identifier, components)
     entities[identifier] = entity
 end
 
-function ECS.component(identifier, value)
+function Ecs.component(identifier, value)
     components[identifier] = value
 end
 
-function ECS.system(type, components, callback)
+function Ecs.system(type, components, callback)
     local system = {
         type = type,
         components = components,
@@ -138,15 +138,15 @@ function ECS.system(type, components, callback)
     table.insert(system_types[type], #system)
 end
 
-function ECS.add(instance)
+function Ecs.add(instance)
     entity_add_queue:push(instance)
 end
 
-function ECS.remove(instance)
+function Ecs.remove(instance)
     entity_remove_queue:push(instance)
 end
 
-function ECS.flush_queues()
+function Ecs.flush_queues()
     while #entity_remove_queue.items ~= 0 do
         local instance = entity_remove_queue:pop()
         for i, v in ipairs(entity_instances) do
@@ -165,7 +165,7 @@ function ECS.flush_queues()
     end
 end
 
-function ECS.run(system_type, ...)
+function Ecs.run(system_type, ...)
     for _, instance in ipairs(entity_instances) do
         if instance[system_type] ~= nil then
             instance[system_type](instance, ...)
@@ -180,4 +180,4 @@ function ECS.run(system_type, ...)
     end
 end
 
-return ECS
+return Ecs
