@@ -2,7 +2,6 @@ local path = (...):gsub(".init$", "") .. "."
 local copy_path = path:gsub("ecs.$", "")
 
 local Queue = require(path .. "queue")
-local SparseSet = require(path .. "sparseset")
 local Copy = require(copy_path .. "copy")
 
 local ECS = {
