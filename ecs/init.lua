@@ -44,7 +44,10 @@ local function update_instance_systems(instance)
 end
 
 local function add_component_to_instance(instance, identifier, default_value)
-    local component = components[identifier]
+    local component = nil
+    if components[identifier] then
+        component = components[identifier].value
+    end
 
     if component == nil then
         instance[identifier] = default_value
@@ -57,6 +60,10 @@ local function add_component_to_instance(instance, identifier, default_value)
             end
         end
         instance[identifier] = component
+
+        if components[identifier].init then
+            components[identifier].init(component)
+        end
     end
 end
 
@@ -65,11 +72,15 @@ function Ecs.create(identifier)
     local instance = setmetatable({}, entity.mt)
     for k, v in pairs(entity.components) do
         if type(k) == "number" then
-            local component = components[v]
+            local component = components[v].value
             if type(component) == "table" then
                 component = Copy.deep(component)
             end
             instance[v] = component
+
+            if components[v].init then
+                components[v].init(instance[v])
+            end
         else
             add_component_to_instance(instance, k, v)
         end
@@ -121,8 +132,11 @@ function Ecs.inherited_entity(identifier, super_identifier, components)
     entities[identifier] = entity
 end
 
-function Ecs.component(identifier, value)
-    components[identifier] = value
+function Ecs.component(identifier, value, init)
+    components[identifier] = {
+        value = value,
+        init = init
+    }
 end
 
 function Ecs.system(type, components, callback)
