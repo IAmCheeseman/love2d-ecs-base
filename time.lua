@@ -27,7 +27,7 @@ ECS.component("timer", {
 
 ECS.component("time", 0)
 
-ECS.system("step", "timer", { "timer" }, function(ent, dt)
+ECS.system("step", { "timer" }, function(ent, dt)
     local timer = ent.timer
 
     for k, v in pairs(timer) do
@@ -41,6 +41,6 @@ ECS.system("step", "timer", { "timer" }, function(ent, dt)
     end
 end)
 
-ECS.system("step", "time", { "time" }, function(ent, dt)
+ECS.system("step", { "time" }, function(ent, dt)
     ent.time = ent.time + dt
 end)

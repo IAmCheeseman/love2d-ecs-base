@@ -28,7 +28,8 @@ end
 
 local function update_instance_systems(instance)
     instance.systems = {}
-    for system_identifier, system in pairs(systems) do
+    for system_id, system in ipairs(systems) do
+        -- Check if system is valid
         local can_use_system = true
         for i, component_identifier in ipairs(system.components) do
             if instance[component_identifier] == nil then
@@ -38,7 +39,7 @@ local function update_instance_systems(instance)
         end
 
         if can_use_system then
-            table.insert(instance.systems, system_identifier)
+            table.insert(instance.systems, system_id)
         end
     end
 end
@@ -125,17 +126,17 @@ function ECS.component(identifier, value)
     components[identifier] = value
 end
 
-function ECS.system(type, identifier, components, callback)
+function ECS.system(type, components, callback)
     local system = {
         type = type,
         components = components,
         callback = callback,
     }
-    systems[identifier] = system
+    table.insert(systems, system)
     if system_types[type] == nil then
         system_types[type] = {}
     end
-    table.insert(system_types[type], identifier)
+    table.insert(system_types[type], #system)
 end
 
 function ECS.add(instance)

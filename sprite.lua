@@ -14,7 +14,7 @@ ECS.component("animation", {
     state = Animation.new(1, 1, 10),
 })
 
-ECS.system("draw", "draw_sprite", { "sprite", "transform" }, function(ent)
+ECS.system("draw", { "sprite", "transform" }, function(ent)
     local tr = ent.transform
 
     if ent.sprite.texture == nil then
@@ -29,7 +29,7 @@ ECS.system("draw", "draw_sprite", { "sprite", "transform" }, function(ent)
     love.graphics.draw(ent.sprite.texture, ent.sprite.quad, tr.position.x, tr.position.y, tr.r, tr.scale.x, tr.scale.y, tr.skew.x, tr.skew.y)
 end)
 
-ECS.system("step", "animate", { "sprite", "animation" }, function(ent, dt)
+ECS.system("step", { "sprite", "animation" }, function(ent, dt)
     local anim = ent.animation
     local sprite = ent.sprite
 
