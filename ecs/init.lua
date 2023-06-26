@@ -15,6 +15,7 @@ local Ecs = {
 local entities = {} -- Holds all the entities
 local components = {} -- Holds all the components
 local systems = {} -- Holds all the systems
+local tags = {}
 local system_types = {}
 
 local entity_instances = {}
@@ -161,13 +162,21 @@ function Ecs.remove(instance)
 end
 
 function Ecs.flush_queues()
-    while #entity_remove_queue.items ~= 0 do
-        local instance = entity_remove_queue:pop()
-        for i, v in ipairs(entity_instances) do
-            if v == instance then
-                table.remove(entity_instances, i)
-            end
+    local to_remove = {}
+    for i, v in ipairs(entity_instances) do
+        if entity_remove_queue:has(v) then
+            entity_remove_queue:pop()
+            table.insert(to_remove, i)
         end
+    end
+    while #entity_remove_queue.items ~= 0 do
+        entity_remove_queue:pop() -- clearly inaccessible 
+    end
+
+    for _, v in ipairs(to_remove) do
+        local last = entity_instances[#entity_instances]
+        entity_instances[v] = last
+        entity_instances[#entity_instances] = nil
     end
 
     while #entity_add_queue.items ~= 0 do

@@ -10,6 +10,16 @@ local function queue_pop(self)
     return value
 end
 
+local function queue_has(self, value)
+    for _, v in ipairs(self.items) do
+        if v == value then
+            return true
+        end
+    end
+    
+    return false
+end
+
 local function queue_push(self, value)
     table.insert(self.items, value)
 end
@@ -30,6 +40,7 @@ function Queue.new()
 
         pop = queue_pop,
         push = queue_push,
+        has = queue_has,
     }, queue_mt)
 end
 
