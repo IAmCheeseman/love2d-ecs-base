@@ -6,7 +6,13 @@ Ecs.component("sprite", {
     path = path:gsub("%.", "/") .. "test.png",
     quad = nil,
     texture = nil,
-})
+}, function(component)
+    component.texture = love.graphics.newImage(component.path)
+    component.quad = love.graphics.newQuad(
+        0, 0,
+        component.texture:getWidth(), component.texture:getHeight(),
+        component.texture:getWidth(), component.texture:getHeight())
+end)
 Ecs.component("animation", {
     frame_count = 1,
     current_frame = 1,
@@ -17,14 +23,6 @@ Ecs.component("animation", {
 Ecs.system("draw", { "sprite", "transform" }, function(ent)
     local tr = ent.transform
 
-    if ent.sprite.texture == nil then
-        ent.sprite.texture = love.graphics.newImage(ent.sprite.path)
-        ent.sprite.quad = love.graphics.newQuad(
-            0, 0,
-            ent.sprite.texture:getWidth(), ent.sprite.texture:getHeight(),
-            ent.sprite.texture:getWidth(), ent.sprite.texture:getHeight())
-    end
-
     love.graphics.setColor(1, 1, 1)
     love.graphics.draw(ent.sprite.texture, ent.sprite.quad, tr.position.x, tr.position.y, tr.r, tr.scale.x, tr.scale.y, tr.skew.x, tr.skew.y)
 end)
@@ -32,10 +30,6 @@ end)
 Ecs.system("step", { "sprite", "animation" }, function(ent, dt)
     local anim = ent.animation
     local sprite = ent.sprite
-
-    if sprite.texture == nil then
-        return
-    end
 
     anim.timer = anim.timer + dt
 
