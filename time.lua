@@ -29,11 +29,9 @@ Ecs.component("time", 0)
 
 Ecs.system("step", { "timer" }, function(ent, dt)
     local timer = ent.timer
-
-    for k, v in pairs(timer) do
+    for _, v in pairs(timer) do
         if type(v) == "table" and not v:is_over() then
             v.time_left = v.time_left - dt
-
             if v:is_over() and v.callback then
                 v.callback(ent)
             end

@@ -15,3 +15,4 @@ require "sprite"
 rawset(_G, "Ecs", require "ecs")
 rawset(_G, "Vec2", require "vector")
 rawset(_G, "Animation", require "animation")
+

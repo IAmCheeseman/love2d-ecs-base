@@ -15,23 +15,18 @@ local Ecs = {
 local entities = {} -- Holds all the entities
 local components = {} -- Holds all the components
 local systems = {} -- Holds all the systems
-local tags = {}
 local system_types = {}
 
 local entity_instances = {}
 local entity_add_queue = Queue.new()
 local entity_remove_queue = Queue.new()
 
-local function item_exists(definition_array, identifier)
-    return definition_array[identifier] ~= nil
-end
-
 local function update_instance_systems(instance)
     instance.systems = {}
     for system_id, system in ipairs(systems) do
         -- Check if system is valid
         local can_use_system = true
-        for i, component_identifier in ipairs(system.components) do
+        for _, component_identifier in ipairs(system.components) do
             if instance[component_identifier] == nil then
                 can_use_system = false
                 break
@@ -68,6 +63,9 @@ local function add_component_to_instance(instance, identifier, default_value)
     end
 end
 
+--- Creates an entity.
+---@param identifier string The type of entity
+---@return table Entity An entity.
 function Ecs.create(identifier)
     local entity = entities[identifier]
     local instance = setmetatable({}, entity.mt)
@@ -91,6 +89,9 @@ function Ecs.create(identifier)
     return instance
 end
 
+--- Creates an entity
+---@param identifier string What to name the entity
+---@param components table The components of the entity
 function Ecs.entity(identifier, components)
     local entity = {
         type = identifier,
@@ -104,6 +105,10 @@ function Ecs.entity(identifier, components)
     entities[identifier] = entity
 end
 
+--- Inherits from another entity
+---@param identifier string What to name the entity
+---@param super_identifier string What entity to inherit from
+---@param components table The components of the entity
 function Ecs.inherited_entity(identifier, super_identifier, components)
     local inherited = Copy.deep(entities[super_identifier].components)
 
@@ -133,6 +138,10 @@ function Ecs.inherited_entity(identifier, super_identifier, components)
     entities[identifier] = entity
 end
 
+--- Creates a component
+---@param identifier string What to name the component
+---@param value any What data does the component represent
+---@param init function This will be called when the component is put on any entity
 function Ecs.component(identifier, value, init)
     components[identifier] = {
         value = value,
@@ -140,6 +149,10 @@ function Ecs.component(identifier, value, init)
     }
 end
 
+--- Creates a system
+---@param type string What type of system is it
+---@param components table What components does an entity need to run this system
+---@param callback function What to run on the entities
 function Ecs.system(type, components, callback)
     local system = {
         type = type,
@@ -153,14 +166,19 @@ function Ecs.system(type, components, callback)
     table.insert(system_types[type], #system)
 end
 
+--- Adds an entity so it can be processed by systems
+---@param instance table The entity to add
 function Ecs.add(instance)
     entity_add_queue:push(instance)
 end
 
+--- Removes an entity from the system's process list
+---@param instance table The entity to be removed
 function Ecs.remove(instance)
     entity_remove_queue:push(instance)
 end
 
+--- Flushes all deletion and creation queues.
 function Ecs.flush_queues()
     local to_remove = {}
     for i, v in ipairs(entity_instances) do
@@ -188,6 +206,9 @@ function Ecs.flush_queues()
     end
 end
 
+--- Runs all systems of a specified type
+---@param system_type string Which type to run
+---@param ... any What arguments to pass to the systems
 function Ecs.run(system_type, ...)
     for _, instance in ipairs(entity_instances) do
         if instance[system_type] ~= nil then
